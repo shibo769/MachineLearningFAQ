@@ -410,22 +410,18 @@
     
     为了方便求解，一般取对数似然函数：
     
-    $$
     \begin{aligned}
         l(w) = \ln L(w) & = \sum[y_i\ln p(x_i) + (1-y_i)\ln (1-p(x_i))] \\
         & = \sum[y_i\ln\frac{p(x_i)}{1-p(x_i)} + \ln(1-p(x_i))] \\
         & = \sum[y_i z_i - \ln(1 + e^{z_i})]
     \end{aligned}
-    $$
 
     使用梯度下降法求解时，取似然函数的**相反值**进行优化，求其梯度为：
-
-    $$    
+    
     \begin{aligned}
         \frac{\partial J(w)}{\partial w_j} & = -\sum_i \frac{\partial [y_i z_i - \ln(1 + e^{z_i})]}{\partial z_i} \cdot \frac{\partial z_i}{\partial w_j} \\
         & = -\sum_i (y_i - p(x_i)) \cdot x_j
     \end{aligned}
-    $$
 
     权重更新为：
     
@@ -502,19 +498,15 @@
 2. XGBoost 基本原理
 
     在第 $t$ 轮训练中，在**保留前 $t-1$ 轮训练结果**的前提下，加入一棵树 $f_t$，使得目标函数**尽可能地降低**。用公式表达如下：
-    $$
         \begin{aligned}
             Obj_t & = \sum_{i=1}^n l(y_i, \hat{y}_i^t) \\
             & = \sum_{i=1}^n l(y_i, \hat{y}_i^{t-1} + f_t(x_i)) \\
         \end{aligned}
-    $$
     设损失函数为 MSE，则原目标函数写为：
-    $$
         \begin{aligned}
             Obj_t &= \sum_{i=1}^n (y_i - (\hat{y}_i^{t-1} + f_t(x_i)))^2 \\
             & = \sum_{i=1}^n[2(\hat{y}_i^{t-1} - y_i)f_t(x_i)+f_t(x_i)^2] + \sum_{i=1}^n ({y_i - \hat{y}_i^{t-1}})^2
         \end{aligned}
-    $$
     其中，$\sum_{i=1}^n ({y_i - \hat{y}_i^{t-1}})^2$ 与本轮无关，可以视为常数，$(\hat{y}_i^{t-1} - y_i)$ 一般被叫做**残差**，表示了上一轮预测值与真实值之间的差异，也是 XGBoost 算法在每一轮中预测的主要目标。即，将上一轮的训练结果看作一个整体，而新的一轮则对残差值进行预测。
 
     ![xgboost](imgs/XGBoost.png)
@@ -674,7 +666,7 @@
 1. 常见的文本相似度计算方法
 
     - 欧式距离，用于计算两等长**句子向量**的相似度。 $\text{distance} = \sqrt{(A-B)*(A-B)^T}$；
-    - 余弦距离，用于计算两等长**句子向量**的相似度。 $\text{distance} = \frac{A*B^T}{|A|*|B|}$；
+    - 余弦距离，用于计算两等长**句子向量**的相似度。 $\text{distance} = \frac{A*B^T}{|A||B|}$；
     - Jaccard 相似度。将句子看作单词的集合。则 A 与 B 的 Jaccard 相似度为：$\text{similarity} = \frac{|A\cap B|}{|A\cup B|}$；
     - TF-IDF。TF 是词频 (Term Frequency)，表示在一个文章中某个单词出现的频率；IDF 是逆文本频率指数 (Inverse Document Frequency)，表示含有该关键词的文档占所有文档的比例。TF-IDF 建立在以下假设上：对区别文档最有意义的词语应该是那些在**文档中出现频率高**，而在整个文档集合的**其他文档中出现频率少**的词语；
     - 最小编辑距离。一种经典的距离计算方法，用来度量字符串之间的差异。将字符串 A 不断修改（增删改），直至成为字符串 B，所需要的修改次数代表了字符串 A 和 B 的差异大小。常使用动态规划来计算最小编辑距离。
@@ -910,12 +902,10 @@
         由于 Transformer 模型没有循环结构或卷积结构，为了使模型能够学习到输入序列的顺序，我们需要插入一些关于 tokens 位置的信息。因此提出了 **Positional Encoding** 的概念，其与 input embedding 具有相同的维度，便于相加。
 
         但是，如果直接使用计数的方式来进行 encoding，即 $pos = 1, 2, ..., n - 1$，那么最后一个 token 的encoding 将会比第一个 token 大很多，与原 embedding 相加后会造成数据不平衡的现象。原论文作者们的方法是使用了不同频率的正弦和余弦函数来作为位置编码：
-        $$
             \begin{aligned}
                 PE_{(pos,2i)}   & = sin(pos/10000^{2i/d_{model}}) \\
                 PE_{(pos,2i+1)} & = cos(pos/10000^{2i/d_{model}}) \\
             \end{aligned}
-        $$
 
         ```python
         def get_positional_embedding(d_model, max_seq_len):
